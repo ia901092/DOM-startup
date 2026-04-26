@@ -60,94 +60,94 @@
 <body>
 
 <?php
-    $selected = (isset($_GET['paper']) && $_GET['paper'] !== "") ? $_GET['paper'] : "Morning_Edition";
+$selected = (isset($_GET['paper']) && $_GET['paper'] !== "") ? $_GET['paper'] : "Morning_Edition";
 ?>
 
 <form action="" method="get">
     <select name="paper">
 <?php
-    $papersDoc = new DOMDocument();
-    $papersDoc->load("https://wwwlab.webug.se/examples/XML/articleservice/papers/");
+$papersDoc = new DOMDocument();
+$papersDoc->load("https://wwwlab.webug.se/examples/XML/articleservice/papers/");
 
-    $papers = $papersDoc->getElementsByTagName("NEWSPAPER");
+$papers = $papersDoc->getElementsByTagName("NEWSPAPER");
 
-    foreach ($papers as $paper) {
-        $type = $paper->getAttribute("TYPE");
-        $name = $paper->getAttribute("NAME");
-        $isSelected = ($type === $selected) ? " selected" : "";
-        echo "        <option value=\"" . htmlspecialchars($type) . "\"" . $isSelected . ">" . htmlspecialchars($name) . "</option>\n";
-    }
+foreach ($papers as $paper) {
+    $type = $paper->getAttribute("TYPE");
+    $name = $paper->getAttribute("NAME");
+    $isSelected = ($type === $selected) ? " selected" : "";
+    echo "        <option value=\"" . htmlspecialchars($type) . "\"" . $isSelected . ">" . htmlspecialchars($name) . "</option>\n";
+}
 ?>
     </select>
     <input type="submit" value="Visa">
 </form>
 
 <?php
-    $url = "https://wwwlab.webug.se/examples/XML/articleservice/articles/?paper=" . urlencode($selected);
+$url = "https://wwwlab.webug.se/examples/XML/articleservice/articles/?paper=" . urlencode($selected);
 
-    $dom = new DOMDocument();
-    $dom->load($url);
+$dom = new DOMDocument();
+$dom->load($url);
 
-    $newspapers = $dom->getElementsByTagName("NEWSPAPER");
+$newspapers = $dom->getElementsByTagName("NEWSPAPER");
 
-    foreach ($newspapers as $newspaper) {
-        echo "<table class=\"newspaper\">\n";
-        echo "    <tbody>\n";
+foreach ($newspapers as $newspaper) {
+    echo "<table class=\"newspaper\">\n";
+    echo "    <tbody>\n";
 
-        echo "        <tr>\n";
-        echo "            <td>\n";
-        foreach ($newspaper->attributes as $attr) {
-            echo "                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
-        }
-        echo "            </td>\n";
-        echo "        </tr>\n";
-
-        echo "        <tr>\n";
-        echo "            <td>\n";
-        echo "                <table class=\"articles\">\n";
-        echo "                    <tbody>\n";
-        echo "                        <tr>\n";
-
-        $articles = $newspaper->getElementsByTagName("ARTICLE");
-
-        foreach ($articles as $article) {
-            $type = strtolower($article->getAttribute("TYPE"));
-            echo "                            <td class=\"" . htmlspecialchars($type) . "\">\n";
-
-            foreach ($article->attributes as $attr) {
-                echo "                                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
-            }
-
-            $stories = $article->getElementsByTagName("STORY");
-            foreach ($stories as $story) {
-                echo "                                <div class=\"story\">\n";
-
-                foreach ($story->childNodes as $node) {
-                    if ($node->nodeType !== XML_ELEMENT_NODE) {
-                        continue;
-                    }
-                    $nodeName = strtoupper($node->nodeName);
-                    if ($nodeName === "HEADING") {
-                        echo "                                    <h3>" . htmlspecialchars($node->textContent) . "</h3>\n";
-                    } elseif ($nodeName === "TEXT") {
-                        echo "                                    <p>" . htmlspecialchars($node->textContent) . "</p>\n";
-                    }
-                }
-
-                echo "                                </div>\n";
-            }
-
-            echo "                            </td>\n";
-        }
-
-        echo "                        </tr>\n";
-        echo "                    </tbody>\n";
-        echo "                </table>\n";
-        echo "            </td>\n";
-        echo "        </tr>\n";
-        echo "    </tbody>\n";
-        echo "</table>\n";
+    echo "        <tr>\n";
+    echo "            <td>\n";
+    foreach ($newspaper->attributes as $attr) {
+        echo "                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
     }
+    echo "            </td>\n";
+    echo "        </tr>\n";
+
+    echo "        <tr>\n";
+    echo "            <td>\n";
+    echo "                <table class=\"articles\">\n";
+    echo "                    <tbody>\n";
+    echo "                        <tr>\n";
+
+    $articles = $newspaper->getElementsByTagName("ARTICLE");
+
+    foreach ($articles as $article) {
+        $type = strtolower($article->getAttribute("TYPE"));
+        echo "                            <td class=\"" . htmlspecialchars($type) . "\">\n";
+
+        foreach ($article->attributes as $attr) {
+            echo "                                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
+        }
+
+        $stories = $article->getElementsByTagName("STORY");
+        foreach ($stories as $story) {
+            echo "                                <div class=\"story\">\n";
+
+            foreach ($story->childNodes as $node) {
+                if ($node->nodeType !== XML_ELEMENT_NODE) {
+                    continue;
+                }
+                $nodeName = strtoupper($node->nodeName);
+                if ($nodeName === "HEADING") {
+                    echo "                                    <h3>" . htmlspecialchars($node->textContent) . "</h3>\n";
+                } elseif ($nodeName === "TEXT") {
+                    echo "                                    <p>" . htmlspecialchars($node->textContent) . "</p>\n";
+                }
+            }
+
+            echo "                                </div>\n";
+        }
+
+        echo "                            </td>\n";
+    }
+
+    echo "                        </tr>\n";
+    echo "                    </tbody>\n";
+    echo "                </table>\n";
+    echo "            </td>\n";
+    echo "        </tr>\n";
+    echo "    </tbody>\n";
+    echo "</table>\n";
+}
 ?>
 
 </body>
