@@ -16,14 +16,13 @@
         p  { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; margin: 0; }
     </style>
 </head>
-<body>
-</body>
-</html>
+<body>   <!-- ← PHP och formulär måste vara HÄR inne -->
+
 <?php
 $selected = (isset($_GET['paper']) && $_GET['paper'] !== "") ? $_GET['paper'] : "Morning_Edition";
 ?>
 
-<form action="" method="get">
+<form action="articles.php" method="get">
     <select name="paper">
 <?php
 $papersDoc = new DOMDocument();
@@ -47,3 +46,45 @@ $dom = new DOMDocument();
 $dom->load($url);
 $newspapers = $dom->getElementsByTagName("NEWSPAPER");
 ?>
+
+</body>
+</html>
+
+foreach ($newspapers as $newspaper) {
+    echo "<table class=\"newspaper\">\n";
+    echo "    <tbody>\n";
+
+    // Rad 1: tidningens attribut
+    echo "        <tr>\n";
+    echo "            <td>\n";
+    foreach ($newspaper->attributes as $attr) {
+        echo "                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
+    }
+    echo "            </td>\n";
+    echo "        </tr>\n";
+
+    // Rad 2: artikeltabell, en kolumn per artikel
+    echo "        <tr>\n";
+    echo "            <td>\n";
+    echo "                <table class=\"articles\">\n";
+    echo "                    <tbody>\n";
+    echo "                        <tr>\n";
+
+    $articles = $newspaper->getElementsByTagName("ARTICLE");
+    foreach ($articles as $article) {
+        $type = strtolower($article->getAttribute("TYPE"));
+        echo "                            <td class=\"" . htmlspecialchars($type) . "\">\n";
+        foreach ($article->attributes as $attr) {
+            echo "                                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
+        }
+        echo "                            </td>\n";
+    }
+
+    echo "                        </tr>\n";
+    echo "                    </tbody>\n";
+    echo "                </table>\n";
+    echo "            </td>\n";
+    echo "        </tr>\n";
+    echo "    </tbody>\n";
+    echo "</table>\n";
+}
