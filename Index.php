@@ -19,3 +19,31 @@
 <body>
 </body>
 </html>
+<?php
+$selected = (isset($_GET['paper']) && $_GET['paper'] !== "") ? $_GET['paper'] : "Morning_Edition";
+?>
+
+<form action="" method="get">
+    <select name="paper">
+<?php
+$papersDoc = new DOMDocument();
+$papersDoc->load("https://wwwlab.webug.se/examples/XML/articleservice/papers/");
+$papers = $papersDoc->getElementsByTagName("NEWSPAPER");
+
+foreach ($papers as $paper) {
+    $type = $paper->getAttribute("TYPE");
+    $name = $paper->getAttribute("NAME");
+    $isSelected = ($type === $selected) ? " selected" : "";
+    echo "        <option value=\"" . htmlspecialchars($type) . "\"" . $isSelected . ">" . htmlspecialchars($name) . "</option>\n";
+}
+?>
+    </select>
+    <input type="submit" value="Visa">
+</form>
+
+<?php
+$url = "https://wwwlab.webug.se/examples/XML/articleservice/articles/?paper=" . urlencode($selected);
+$dom = new DOMDocument();
+$dom->load($url);
+$newspapers = $dom->getElementsByTagName("NEWSPAPER");
+?>
