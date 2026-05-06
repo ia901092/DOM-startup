@@ -60,7 +60,12 @@
 <body>
 
 <?php
-$selected = (isset($_GET['paper']) && $_GET['paper'] !== "") ? $_GET['paper'] : "Morning_Edition";
+// COMMIT 1 - Replace ternary with if/else
+if (isset($_GET['paper']) && $_GET['paper'] !== "") {
+    $selected = $_GET['paper'];
+} else {
+    $selected = "Morning_Edition";
+}
 ?>
 
 <form action="" method="get">
@@ -74,8 +79,13 @@ $papers = $papersDoc->getElementsByTagName("NEWSPAPER");
 foreach ($papers as $paper) {
     $type = $paper->getAttribute("TYPE");
     $name = $paper->getAttribute("NAME");
-    $isSelected = ($type === $selected) ? " selected" : "";
-    echo "        <option value=\"" . htmlspecialchars($type) . "\"" . $isSelected . ">" . htmlspecialchars($name) . "</option>\n";
+    // COMMIT 1 - Replace ternary with if/else
+    // COMMIT 2 - Remove htmlspecialchars
+    if ($type === $selected) {
+        echo "        <option value=\"" . $type . "\" selected>" . $name . "</option>\n";
+    } else {
+        echo "        <option value=\"" . $type . "\">" . $name . "</option>\n";
+    }
 }
 ?>
     </select>
@@ -83,7 +93,8 @@ foreach ($papers as $paper) {
 </form>
 
 <?php
-$url = "https://wwwlab.webug.se/examples/XML/articleservice/articles/?paper=" . urlencode($selected);
+// COMMIT 3 - Remove urlencode
+$url = "https://wwwlab.webug.se/examples/XML/articleservice/articles/?paper=" . $selected;
 
 $dom = new DOMDocument();
 $dom->load($url);
@@ -97,7 +108,8 @@ foreach ($newspapers as $newspaper) {
     echo "        <tr>\n";
     echo "            <td>\n";
     foreach ($newspaper->attributes as $attr) {
-        echo "                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
+        // COMMIT 2 - Remove htmlspecialchars
+        echo "                " . $attr->name . ": " . $attr->value . "<br>\n";
     }
     echo "            </td>\n";
     echo "        </tr>\n";
@@ -108,14 +120,19 @@ foreach ($newspapers as $newspaper) {
     echo "                    <tbody>\n";
     echo "                        <tr>\n";
 
-    $articles = $newspaper->getElementsByTagName("ARTICLE");
+    // COMMIT 4 - Replace getElementsByTagName("ARTICLE") with childNodes
+    foreach ($newspaper->childNodes as $article) {
+        if (strtoupper($article->nodeName) !== "ARTICLE") {
+            continue;
+        }
 
-    foreach ($articles as $article) {
         $type = strtolower($article->getAttribute("TYPE"));
-        echo "                            <td class=\"" . htmlspecialchars($type) . "\">\n";
+        // COMMIT 2 - Remove htmlspecialchars
+        echo "                            <td class=\"" . $type . "\">\n";
 
         foreach ($article->attributes as $attr) {
-            echo "                                " . htmlspecialchars($attr->name) . ": " . htmlspecialchars($attr->value) . "<br>\n";
+            // COMMIT 2 - Remove htmlspecialchars
+            echo "                                " . $attr->name . ": " . $attr->value . "<br>\n";
         }
 
         $stories = $article->getElementsByTagName("STORY");
@@ -123,14 +140,14 @@ foreach ($newspapers as $newspaper) {
             echo "                                <div class=\"story\">\n";
 
             foreach ($story->childNodes as $node) {
-                if ($node->nodeType !== XML_ELEMENT_NODE) {
-                    continue;
-                }
+                // COMMIT 5 - Removed redundant XML_ELEMENT_NODE check
                 $nodeName = strtoupper($node->nodeName);
                 if ($nodeName === "HEADING") {
-                    echo "                                    <h3>" . htmlspecialchars($node->textContent) . "</h3>\n";
+                    // COMMIT 2 - Remove htmlspecialchars
+                    echo "                                    <h3>" . $node->textContent . "</h3>\n";
                 } elseif ($nodeName === "TEXT") {
-                    echo "                                    <p>" . htmlspecialchars($node->textContent) . "</p>\n";
+                    // COMMIT 2 - Remove htmlspecialchars
+                    echo "                                    <p>" . $node->textContent . "</p>\n";
                 }
             }
 
@@ -152,4 +169,3 @@ foreach ($newspapers as $newspaper) {
 
 </body>
 </html>
- 
