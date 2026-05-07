@@ -1,3 +1,6 @@
+
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,29 +61,26 @@
     </style>
 </head>
 <body>
-
+ 
 <?php
-// COMMIT 1 - Replace ternary with if/else
 if (isset($_GET['paper']) && $_GET['paper'] !== "") {
     $selected = $_GET['paper'];
 } else {
     $selected = "Morning_Edition";
 }
 ?>
-
+ 
 <form action="" method="get">
     <select name="paper">
 <?php
 $papersDoc = new DOMDocument();
 $papersDoc->load("https://wwwlab.webug.se/examples/XML/articleservice/papers/");
-
+ 
 $papers = $papersDoc->getElementsByTagName("NEWSPAPER");
-
+ 
 foreach ($papers as $paper) {
     $type = $paper->getAttribute("TYPE");
     $name = $paper->getAttribute("NAME");
-    // COMMIT 1 - Replace ternary with if/else
-    // COMMIT 2 - Remove htmlspecialchars
     if ($type === $selected) {
         echo "        <option value=\"" . $type . "\" selected>" . $name . "</option>\n";
     } else {
@@ -91,72 +91,64 @@ foreach ($papers as $paper) {
     </select>
     <input type="submit" value="Visa">
 </form>
-
+ 
 <?php
-// COMMIT 3 - Remove urlencode
 $url = "https://wwwlab.webug.se/examples/XML/articleservice/articles/?paper=" . $selected;
-
+ 
 $dom = new DOMDocument();
 $dom->load($url);
-
+ 
 $newspapers = $dom->getElementsByTagName("NEWSPAPER");
-
+ 
 foreach ($newspapers as $newspaper) {
     echo "<table class=\"newspaper\">\n";
     echo "    <tbody>\n";
-
+ 
     echo "        <tr>\n";
     echo "            <td>\n";
     foreach ($newspaper->attributes as $attr) {
-        // COMMIT 2 - Remove htmlspecialchars
         echo "                " . $attr->name . ": " . $attr->value . "<br>\n";
     }
     echo "            </td>\n";
     echo "        </tr>\n";
-
+ 
     echo "        <tr>\n";
     echo "            <td>\n";
     echo "                <table class=\"articles\">\n";
     echo "                    <tbody>\n";
     echo "                        <tr>\n";
-
-    // COMMIT 4 - Replace getElementsByTagName("ARTICLE") with childNodes
+ 
     foreach ($newspaper->childNodes as $article) {
         if (strtoupper($article->nodeName) !== "ARTICLE") {
             continue;
         }
-
+ 
         $type = strtolower($article->getAttribute("TYPE"));
-        // COMMIT 2 - Remove htmlspecialchars
         echo "                            <td class=\"" . $type . "\">\n";
-
+ 
         foreach ($article->attributes as $attr) {
-            // COMMIT 2 - Remove htmlspecialchars
             echo "                                " . $attr->name . ": " . $attr->value . "<br>\n";
         }
-
+ 
         $stories = $article->getElementsByTagName("STORY");
         foreach ($stories as $story) {
             echo "                                <div class=\"story\">\n";
-
+ 
             foreach ($story->childNodes as $node) {
-                // COMMIT 5 - Removed redundant XML_ELEMENT_NODE check
                 $nodeName = strtoupper($node->nodeName);
                 if ($nodeName === "HEADING") {
-                    // COMMIT 2 - Remove htmlspecialchars
                     echo "                                    <h3>" . $node->textContent . "</h3>\n";
                 } elseif ($nodeName === "TEXT") {
-                    // COMMIT 2 - Remove htmlspecialchars
                     echo "                                    <p>" . $node->textContent . "</p>\n";
                 }
             }
-
+ 
             echo "                                </div>\n";
         }
-
+ 
         echo "                            </td>\n";
     }
-
+ 
     echo "                        </tr>\n";
     echo "                    </tbody>\n";
     echo "                </table>\n";
@@ -166,6 +158,7 @@ foreach ($newspapers as $newspaper) {
     echo "</table>\n";
 }
 ?>
-
+ 
 </body>
 </html>
+ 
