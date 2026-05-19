@@ -1,6 +1,3 @@
-
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,11 +30,16 @@ Copy
             vertical-align: top;
             width: 220px;
         }
+        /* FIX 1: Tydligare skillnad mellan news och review */
         td.news {
             background-color: #bbdefb;
+            border-left: 6px solid #1976d2;
+            border-top: 3px solid #1976d2;
         }
         td.review {
             background-color: #fff9c4;
+            border-left: 6px solid #f9a825;
+            border-top: 3px solid #f9a825;
         }
         .story p {
             border: 1px solid #555;
@@ -130,20 +132,24 @@ foreach ($newspapers as $newspaper) {
             echo "                                " . $attr->name . ": " . $attr->value . "<br>\n";
         }
  
-        $stories = $article->getElementsByTagName("STORY");
-        foreach ($stories as $story) {
-            echo "                                <div class=\"story\">\n";
- 
-            foreach ($story->childNodes as $node) {
-                $nodeName = strtoupper($node->nodeName);
-                if ($nodeName === "HEADING") {
-                    echo "                                    <h3>" . $node->textContent . "</h3>\n";
-                } elseif ($nodeName === "TEXT") {
-                    echo "                                    <p>" . $node->textContent . "</p>\n";
+        /* FIX 2: HEADING ligger direkt under ARTICLE, inte inuti STORY.
+           Loopa ARTICLE:s barn i ordning så rubriken hamnar rätt. */
+        foreach ($article->childNodes as $node) {
+            $nodeName = strtoupper($node->nodeName);
+            if ($nodeName === "HEADING") {
+                echo "                                <h3>" . $node->textContent . "</h3>\n";
+            } elseif ($nodeName === "STORY") {
+                echo "                                <div class=\"story\">\n";
+                foreach ($node->childNodes as $child) {
+                    $childName = strtoupper($child->nodeName);
+                    if ($childName === "HEADING") {
+                        echo "                                    <h3>" . $child->textContent . "</h3>\n";
+                    } elseif ($childName === "TEXT") {
+                        echo "                                    <p>" . $child->textContent . "</p>\n";
+                    }
                 }
+                echo "                                </div>\n";
             }
- 
-            echo "                                </div>\n";
         }
  
         echo "                            </td>\n";
@@ -161,4 +167,3 @@ foreach ($newspapers as $newspaper) {
  
 </body>
 </html>
- 
