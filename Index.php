@@ -72,7 +72,7 @@ if (isset($_GET['paper']) && $_GET['paper'] !== "") {
 }
 ?>
  
-<form action="" method="get">
+<form method="get"> 
     <select name="paper">
 <?php
 $papersDoc = new DOMDocument();
